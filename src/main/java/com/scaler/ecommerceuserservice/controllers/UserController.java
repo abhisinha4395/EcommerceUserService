@@ -4,13 +4,17 @@ import com.scaler.ecommerceuserservice.dtos.LogOutRequestDto;
 import com.scaler.ecommerceuserservice.dtos.LoginRequestDto;
 import com.scaler.ecommerceuserservice.dtos.SignUpRequestDto;
 import com.scaler.ecommerceuserservice.dtos.UserDto;
-import com.scaler.ecommerceuserservice.exceptions.EmailAlreadyExistsException;
+import com.scaler.ecommerceuserservice.exceptions.InvalidPasswordException;
+import com.scaler.ecommerceuserservice.exceptions.InvalidTokenException;
+import com.scaler.ecommerceuserservice.exceptions.UserAlreadyExistsException;
 import com.scaler.ecommerceuserservice.models.Token;
 import com.scaler.ecommerceuserservice.models.User;
 import com.scaler.ecommerceuserservice.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -23,7 +27,7 @@ public class UserController {
 
     @PostMapping("/signup")
     public ResponseEntity<UserDto> signUp(@RequestBody SignUpRequestDto signupRequestDto)
-            throws EmailAlreadyExistsException {
+            throws UserAlreadyExistsException {
         User user = userService.signUp(signupRequestDto.getFirstName(), signupRequestDto.getLastName(),
                 signupRequestDto.getEmail(), signupRequestDto.getPassword());
         if (user == null){
@@ -34,17 +38,22 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Token> login(@RequestBody LoginRequestDto loginRequestDto){
-        return null;
+    public ResponseEntity<Token> login(@RequestBody LoginRequestDto loginRequestDto) throws InvalidPasswordException {
+        Token token = userService.login(
+                loginRequestDto.getEmail(), loginRequestDto.getPassword());
+        return new ResponseEntity<>(token, HttpStatus.OK);
     }
 
-    @PutMapping("/logout")
+    @PostMapping("/logout")
     public ResponseEntity<Void> logout(@RequestBody LogOutRequestDto logoutRequestDto){
-        return null;
+        userService.logout(logoutRequestDto.getToken());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/validate/{token}")
-    public ResponseEntity<UserDto> validateToken(@PathVariable("token") String token){
-        return null;
+    public ResponseEntity<UserDto> validateToken(@PathVariable("token") String token) throws InvalidTokenException {
+        User user = userService.validateToken(token);
+
+        return new ResponseEntity<>(UserDto.from(user), HttpStatus.OK);
     }
 }

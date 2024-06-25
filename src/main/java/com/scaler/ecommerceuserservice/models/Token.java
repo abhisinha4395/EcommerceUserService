@@ -6,6 +6,7 @@ import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Getter
@@ -18,5 +19,5 @@ public class Token extends BaseModel{
     @ManyToOne
     private User user;
 
-    private Date expiryAt;
+    private LocalDate expiryAt;
 }

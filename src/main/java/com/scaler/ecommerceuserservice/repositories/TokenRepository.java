@@ -15,7 +15,7 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
     @Override
     Token save(Token token);
 
-    //List<Token> findByUserAndIsDeletedAndExpiryAtBefore(User user, Boolean isdeleted, LocalDate date);
+    Optional<Token> findByUserAndIsDeletedAndExpiryAtGreaterThan(User user, Boolean isdeleted, LocalDate date);
 
     /*@Query("from Token t left join t.user where t.user.id=:id and t.isDeleted=FALSE and t.expiryAt <= :expiryDate")
     List<Token> findValidToken(@Param("id") Long id, @Param("expiryDate") LocalDate expiryDate);*/

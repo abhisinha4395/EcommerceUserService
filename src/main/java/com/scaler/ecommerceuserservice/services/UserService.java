@@ -60,8 +60,13 @@ public class UserService {
         }
 
 
-        /*Optional<Token> optionalToken = tokenRepository.findByValueAndIsDeletedAndExpiryAtGreaterThan(
-                optionalToken, false, LocalDate.now());*/
+        Optional<Token> optionalToken = tokenRepository.findByUserAndIsDeletedAndExpiryAtGreaterThan(
+                user, false, LocalDate.now());
+
+        if (optionalToken.isPresent()){
+            return optionalToken.get();
+        }
+
         Token token = generateToken(user);
         return tokenRepository.save(token);
     }
